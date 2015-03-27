@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_telecash" default="compile.module.telecash">
+  <dirname property="module.telecash.basedir" file="${ant.file.module_telecash}"/>
+  
+  <property name="module.jdk.home.telecash" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.telecash" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.telecash" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.telecash" value="-encoding UTF-8 -source 1.7 ${compiler.args}"/>
+  
+  <property name="telecash.output.dir" value="${module.telecash.basedir}/../out/production/telecash"/>
+  <property name="telecash.testoutput.dir" value="${module.telecash.basedir}/../out/test/telecash"/>
+  
+  <path id="telecash.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="telecash.module.production.classpath">
+    <path refid="${module.jdk.classpath.telecash}"/>
+    <fileset dir="${basedir}/../../../../../prod/ebridge/lib/ext/axis2">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <pathelement location="${basedir}/../../../../../prod/ebridge/lib/ext/google/gson-2.2.4.jar"/>
+    <pathelement location="${ebridgecommons.output.dir}"/>
+  </path>
+  
+  <path id="telecash.runtime.production.module.classpath">
+    <pathelement location="${telecash.output.dir}"/>
+    <fileset dir="${basedir}/../../../../../prod/ebridge/lib/ext/axis2">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <pathelement location="${basedir}/../../../../../prod/ebridge/lib/ext/google/gson-2.2.4.jar"/>
+    <path refid="ebridgecommons.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="telecash.module.classpath">
+    <path refid="${module.jdk.classpath.telecash}"/>
+    <pathelement location="${telecash.output.dir}"/>
+    <fileset dir="${basedir}/../../../../../prod/ebridge/lib/ext/axis2">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <pathelement location="${basedir}/../../../../../prod/ebridge/lib/ext/google/gson-2.2.4.jar"/>
+    <pathelement location="${ebridgecommons.testoutput.dir}"/>
+    <pathelement location="${ebridgecommons.output.dir}"/>
+  </path>
+  
+  <path id="telecash.runtime.module.classpath">
+    <pathelement location="${telecash.testoutput.dir}"/>
+    <pathelement location="${telecash.output.dir}"/>
+    <fileset dir="${basedir}/../../../../../prod/ebridge/lib/ext/axis2">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <pathelement location="${basedir}/../../../../../prod/ebridge/lib/ext/google/gson-2.2.4.jar"/>
+    <path refid="ebridgecommons.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.telecash">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.telecash">
+    <patternset refid="excluded.from.module.telecash"/>
+  </patternset>
+  
+  <path id="telecash.module.sourcepath">
+    <dirset dir="${module.telecash.basedir}">
+      <include name="src/java/main"/>
+    </dirset>
+  </path>
+  
+  <path id="telecash.module.test.sourcepath">
+    <dirset dir="${module.telecash.basedir}">
+      <include name="src/java/test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.telecash" depends="compile.module.telecash.production,compile.module.telecash.tests" description="Compile module telecash"/>
+  
+  <target name="compile.module.telecash.production" depends="register.custom.compilers,compile.module.ebridgecommons" description="Compile module telecash; production classes">
+    <mkdir dir="${telecash.output.dir}"/>
+    <javac2 destdir="${telecash.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.telecash}/javac">
+      <compilerarg line="${compiler.args.telecash}"/>
+      <bootclasspath refid="telecash.module.bootclasspath"/>
+      <classpath refid="telecash.module.production.classpath"/>
+      <src refid="telecash.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.telecash"/>
+    </javac2>
+    
+    <copy todir="${telecash.output.dir}">
+      <fileset dir="${module.telecash.basedir}/src/java/main">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.telecash.tests" depends="register.custom.compilers,compile.module.telecash.production" description="compile module telecash; test classes" unless="skip.tests">
+    <mkdir dir="${telecash.testoutput.dir}"/>
+    <javac2 destdir="${telecash.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.telecash}/javac">
+      <compilerarg line="${compiler.args.telecash}"/>
+      <bootclasspath refid="telecash.module.bootclasspath"/>
+      <classpath refid="telecash.module.classpath"/>
+      <src refid="telecash.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.telecash"/>
+    </javac2>
+    
+    <copy todir="${telecash.testoutput.dir}">
+      <fileset dir="${module.telecash.basedir}/src/java/test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.telecash" description="cleanup module">
+    <delete dir="${telecash.output.dir}"/>
+    <delete dir="${telecash.testoutput.dir}"/>
+  </target>
+</project>

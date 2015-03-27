@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_huawei" default="compile.module.huawei">
+  <dirname property="module.huawei.basedir" file="${ant.file.module_huawei}"/>
+  
+  <property name="module.jdk.home.huawei" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.huawei" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.huawei" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.huawei" value="-encoding UTF-8 -source 1.7 ${compiler.args}"/>
+  
+  <property name="huawei.output.dir" value="${module.huawei.basedir}/../out/production/huawei"/>
+  <property name="huawei.testoutput.dir" value="${module.huawei.basedir}/../out/test/huawei"/>
+  
+  <path id="huawei.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="huawei.module.production.classpath">
+    <path refid="${module.jdk.classpath.huawei}"/>
+    <fileset dir="${basedir}/../../../../../prod/ebridge/lib/ext/axis14">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="huawei.runtime.production.module.classpath">
+    <pathelement location="${huawei.output.dir}"/>
+    <fileset dir="${basedir}/../../../../../prod/ebridge/lib/ext/axis14">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="huawei.module.classpath">
+    <path refid="${module.jdk.classpath.huawei}"/>
+    <pathelement location="${huawei.output.dir}"/>
+    <fileset dir="${basedir}/../../../../../prod/ebridge/lib/ext/axis14">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="huawei.runtime.module.classpath">
+    <pathelement location="${huawei.testoutput.dir}"/>
+    <pathelement location="${huawei.output.dir}"/>
+    <fileset dir="${basedir}/../../../../../prod/ebridge/lib/ext/axis14">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.huawei">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.huawei">
+    <patternset refid="excluded.from.module.huawei"/>
+  </patternset>
+  
+  <path id="huawei.module.sourcepath">
+    <dirset dir="${module.huawei.basedir}">
+      <include name="src/java/main"/>
+    </dirset>
+  </path>
+  
+  <path id="huawei.module.test.sourcepath">
+    <dirset dir="${module.huawei.basedir}">
+      <include name="src/java/test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.huawei" depends="compile.module.huawei.production,compile.module.huawei.tests" description="Compile module huawei"/>
+  
+  <target name="compile.module.huawei.production" depends="register.custom.compilers" description="Compile module huawei; production classes">
+    <mkdir dir="${huawei.output.dir}"/>
+    <javac2 destdir="${huawei.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.huawei}/javac">
+      <compilerarg line="${compiler.args.huawei}"/>
+      <bootclasspath refid="huawei.module.bootclasspath"/>
+      <classpath refid="huawei.module.production.classpath"/>
+      <src refid="huawei.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.huawei"/>
+    </javac2>
+    
+    <copy todir="${huawei.output.dir}">
+      <fileset dir="${module.huawei.basedir}/src/java/main">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.huawei.tests" depends="register.custom.compilers,compile.module.huawei.production" description="compile module huawei; test classes" unless="skip.tests">
+    <mkdir dir="${huawei.testoutput.dir}"/>
+    <javac2 destdir="${huawei.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.huawei}/javac">
+      <compilerarg line="${compiler.args.huawei}"/>
+      <bootclasspath refid="huawei.module.bootclasspath"/>
+      <classpath refid="huawei.module.classpath"/>
+      <src refid="huawei.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.huawei"/>
+    </javac2>
+    
+    <copy todir="${huawei.testoutput.dir}">
+      <fileset dir="${module.huawei.basedir}/src/java/test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.huawei" description="cleanup module">
+    <delete dir="${huawei.output.dir}"/>
+    <delete dir="${huawei.testoutput.dir}"/>
+  </target>
+</project>

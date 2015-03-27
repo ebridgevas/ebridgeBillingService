@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_billingservice" default="compile.module.billingservice">
+  <dirname property="module.billingservice.basedir" file="${ant.file.module_billingservice}"/>
+  
+  <property name="module.jdk.home.billingservice" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.billingservice" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.billingservice" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.billingservice" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="billingservice.output.dir" value="${module.billingservice.basedir}/out/production/billingService"/>
+  <property name="billingservice.testoutput.dir" value="${module.billingservice.basedir}/out/test/billingService"/>
+  
+  <path id="billingservice.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="billingservice.module.production.classpath">
+    <path refid="${module.jdk.classpath.billingservice}"/>
+  </path>
+  
+  <path id="billingservice.runtime.production.module.classpath">
+    <pathelement location="${billingservice.output.dir}"/>
+  </path>
+  
+  <path id="billingservice.module.classpath">
+    <path refid="${module.jdk.classpath.billingservice}"/>
+    <pathelement location="${billingservice.output.dir}"/>
+  </path>
+  
+  <path id="billingservice.runtime.module.classpath">
+    <pathelement location="${billingservice.testoutput.dir}"/>
+    <pathelement location="${billingservice.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.billingservice">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.billingservice">
+    <patternset refid="excluded.from.module.billingservice"/>
+  </patternset>
+  
+  
+  <target name="compile.module.billingservice" depends="compile.module.billingservice.production,compile.module.billingservice.tests" description="Compile module billingService"/>
+  
+  <target name="compile.module.billingservice.production" depends="register.custom.compilers" description="Compile module billingService; production classes"/>
+  
+  <target name="compile.module.billingservice.tests" depends="register.custom.compilers,compile.module.billingservice.production" description="compile module billingService; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.billingservice" description="cleanup module">
+    <delete dir="${billingservice.output.dir}"/>
+    <delete dir="${billingservice.testoutput.dir}"/>
+  </target>
+</project>

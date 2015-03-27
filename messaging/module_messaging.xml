@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_messaging" default="compile.module.messaging">
+  <dirname property="module.messaging.basedir" file="${ant.file.module_messaging}"/>
+  
+  <property name="module.jdk.home.messaging" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.messaging" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.messaging" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.messaging" value="-encoding UTF-8 -source 1.7 ${compiler.args}"/>
+  
+  <property name="messaging.output.dir" value="${module.messaging.basedir}/../out/production/messaging"/>
+  <property name="messaging.testoutput.dir" value="${module.messaging.basedir}/../out/test/messaging"/>
+  
+  <path id="messaging.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="messaging.module.production.classpath">
+    <path refid="${module.jdk.classpath.messaging}"/>
+    <pathelement location="${ebridgecommons.output.dir}"/>
+  </path>
+  
+  <path id="messaging.runtime.production.module.classpath">
+    <pathelement location="${messaging.output.dir}"/>
+    <path refid="ebridgecommons.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="messaging.module.classpath">
+    <path refid="${module.jdk.classpath.messaging}"/>
+    <pathelement location="${messaging.output.dir}"/>
+    <pathelement location="${ebridgecommons.testoutput.dir}"/>
+    <pathelement location="${ebridgecommons.output.dir}"/>
+  </path>
+  
+  <path id="messaging.runtime.module.classpath">
+    <pathelement location="${messaging.testoutput.dir}"/>
+    <pathelement location="${messaging.output.dir}"/>
+    <path refid="ebridgecommons.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.messaging">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.messaging">
+    <patternset refid="excluded.from.module.messaging"/>
+  </patternset>
+  
+  <path id="messaging.module.sourcepath">
+    <dirset dir="${module.messaging.basedir}">
+      <include name="src/java/main"/>
+    </dirset>
+  </path>
+  
+  <path id="messaging.module.test.sourcepath">
+    <dirset dir="${module.messaging.basedir}">
+      <include name="src/java/test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.messaging" depends="compile.module.messaging.production,compile.module.messaging.tests" description="Compile module messaging"/>
+  
+  <target name="compile.module.messaging.production" depends="register.custom.compilers,compile.module.ebridgecommons" description="Compile module messaging; production classes">
+    <mkdir dir="${messaging.output.dir}"/>
+    <javac2 destdir="${messaging.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.messaging}/javac">
+      <compilerarg line="${compiler.args.messaging}"/>
+      <bootclasspath refid="messaging.module.bootclasspath"/>
+      <classpath refid="messaging.module.production.classpath"/>
+      <src refid="messaging.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.messaging"/>
+    </javac2>
+    
+    <copy todir="${messaging.output.dir}">
+      <fileset dir="${module.messaging.basedir}/src/java/main">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.messaging.tests" depends="register.custom.compilers,compile.module.messaging.production" description="compile module messaging; test classes" unless="skip.tests">
+    <mkdir dir="${messaging.testoutput.dir}"/>
+    <javac2 destdir="${messaging.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.messaging}/javac">
+      <compilerarg line="${compiler.args.messaging}"/>
+      <bootclasspath refid="messaging.module.bootclasspath"/>
+      <classpath refid="messaging.module.classpath"/>
+      <src refid="messaging.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.messaging"/>
+    </javac2>
+    
+    <copy todir="${messaging.testoutput.dir}">
+      <fileset dir="${module.messaging.basedir}/src/java/test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.messaging" description="cleanup module">
+    <delete dir="${messaging.output.dir}"/>
+    <delete dir="${messaging.testoutput.dir}"/>
+  </target>
+</project>
